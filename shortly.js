@@ -85,6 +85,22 @@ app.post('/links',
     });
   });
 
+app.post('/signup', function(req, res) {
+
+  var username = req.body.username;
+  var password = req.body.password;
+
+  new User ({
+    username: username,
+    password: password
+  })  
+
+
+    .save().then(function() {
+      res.redirect('/');
+    });
+});
+
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
