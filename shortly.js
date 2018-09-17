@@ -10,6 +10,7 @@ var User = require('./app/models/user');
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
+var session = require('express-session');
 
 var app = express();
 
@@ -22,8 +23,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  secret: 'philipp',
+  resave: false,
+  saveUninitialized: false
+}
+));
 
-function restrict(req, res, next) {
+
+var restrict = function (req, res, next) {
  
   if (req.session) {
     next();
@@ -32,7 +40,7 @@ function restrict(req, res, next) {
     // req.session.error = 'Access denied!';
     res.redirect('/login');
   }
-}
+};
 
 
 app.get('/', restrict, 
@@ -84,6 +92,22 @@ app.post('/links',
       }
     });
   });
+//   app.post('/login', function(request, response) {
+ 
+//     var username = request.body.username;
+//     var password = request.body.password;
+ 
+//     if(username == 'demo' && password == 'demo'){
+//         request.session.regenerate(function(){
+//         request.session.user = username;
+//         response.redirect('/restricted');
+//         });
+//     }
+//     else {
+//        res.redirect('login');
+//     }    
+// });
+
 
 app.post('/signup', function(req, res) {
 
@@ -93,8 +117,11 @@ app.post('/signup', function(req, res) {
   new User ({
     username: username,
     password: password
-  })  
+  });  
 
+  req.session.regenerate(() => {
+    req.session.user = username;
+  })
 
     .save().then(function() {
       res.redirect('/');
@@ -110,7 +137,25 @@ app.get('/login',
 
   function(req, res) {
     res.render('login');
+
   });
+
+app.post('/login', function(request, response) {
+
+  
+  var username = request.body.username;
+  var password = request.body.password;
+
+    
+  if (username === 'Phillip' && password === 'Phillip') {
+    request.session.regenerate(function() {
+      request.session.user = username;
+      response.redirect('/');
+    });
+  } else {
+    response.redirect('/login');
+  }    
+});
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
