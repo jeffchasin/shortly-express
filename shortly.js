@@ -33,7 +33,7 @@ app.use(session({
 
 var restrict = function (req, res, next) {
  
-  if (req.session) {
+  if (req.session.user) {
     next();
   } else {
     console.log('poop');
@@ -117,15 +117,13 @@ app.post('/signup', function(req, res) {
   new User ({
     username: username,
     password: password
-  });  
-
-  req.session.regenerate(() => {
-    req.session.user = username;
-  })
-
-    .save().then(function() {
-      res.redirect('/');
+  }).save().then(function() {
+    req.session.regenerate(() => {
+      req.session.user = username;
     });
+    res.redirect('/');
+  }); 
+ 
 });
 
 /************************************************************/
@@ -148,6 +146,8 @@ app.post('/login', function(request, response) {
 
     
   if (username === 'Phillip' && password === 'Phillip') {
+
+
     request.session.regenerate(function() {
       request.session.user = username;
       response.redirect('/');
