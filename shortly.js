@@ -145,22 +145,19 @@ app.post('/login', function(request, response) {
   var username = request.body.username;
   var password = request.body.password;
 
-  new User({
-    'username': username
-  }).fetch({require: true}).then(function(user) {
+  new User({username: username})
+    .fetch({require: true})
+    .then(function(user) {
 
-    console.log('user:', user);
-
-    if (user !== null) {
-      request.session.regenerate(function() {
-        request.session.user = username;
-        response.redirect('/');
-      });
-    }
-  }).catch(err => {
-    console.log('Error', err);
-    response.redirect('/login');
-  });
+      if (user !== null) {
+        request.session.regenerate(function() {
+          request.session.user = username;
+          response.redirect('/');
+        });
+      }
+    }).catch(err => {
+      response.redirect('/login');
+    });
 });
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail

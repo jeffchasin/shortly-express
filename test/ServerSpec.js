@@ -299,7 +299,7 @@ describe('', function() {
 
   }); // 'Account Creation'
 
-  describe.only('Account Login:', function() {
+  describe('Account Login:', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
