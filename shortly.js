@@ -117,7 +117,9 @@ app.post('/signup', function(req, res) {
   new User ({
     username: username,
     password: password
-  }).save().then(function() {
+  }).save().then(function(user) {
+
+    console.log('usercreated: ', user);
     req.session.regenerate(() => {
       req.session.user = username;
     });
@@ -140,23 +142,26 @@ app.get('/login',
 
 app.post('/login', function(request, response) {
 
-  
   var username = request.body.username;
   var password = request.body.password;
 
-    
-  if (username === 'Phillip' && password === 'Phillip') {
+  new User({
+    'username': username
+  }).fetch({require: true}).then(function(user) {
 
+    console.log('user:', user);
 
-    request.session.regenerate(function() {
-      request.session.user = username;
-      response.redirect('/');
-    });
-  } else {
+    if (user !== null) {
+      request.session.regenerate(function() {
+        request.session.user = username;
+        response.redirect('/');
+      });
+    }
+  }).catch(err => {
+    console.log('Error', err);
     response.redirect('/login');
-  }    
+  });
 });
-
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
