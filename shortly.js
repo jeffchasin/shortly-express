@@ -92,21 +92,24 @@ app.post('/links',
       }
     });
   });
-//   app.post('/login', function(request, response) {
- 
-//     var username = request.body.username;
-//     var password = request.body.password;
- 
-//     if(username == 'demo' && password == 'demo'){
-//         request.session.regenerate(function(){
-//         request.session.user = username;
-//         response.redirect('/restricted');
-//         });
-//     }
-//     else {
-//        res.redirect('login');
-//     }    
-// });
+
+
+
+/************************************************************/
+// Write your authentication routes here
+/************************************************************/
+
+app.get('/signup',
+  function(req, res) {
+    res.render('signup');
+  });
+
+app.get('/login',
+
+  function(req, res) {
+    res.render('login');
+
+  });
 
 
 app.post('/signup', function(req, res) {
@@ -128,18 +131,6 @@ app.post('/signup', function(req, res) {
  
 });
 
-/************************************************************/
-// Write your authentication routes here
-/************************************************************/
-
-
-app.get('/login',
-
-  function(req, res) {
-    res.render('login');
-
-  });
-
 app.post('/login', function(request, response) {
 
   var username = request.body.username;
@@ -159,6 +150,13 @@ app.post('/login', function(request, response) {
       response.redirect('/login');
     });
 });
+
+app.get('/logout', function(req, res) {
+  req.session.cookie.expires = Date.now();
+  req.session.destroy();
+  res.redirect('/login');
+});
+
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
