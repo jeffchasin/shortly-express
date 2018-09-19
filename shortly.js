@@ -117,19 +117,31 @@ app.post('/signup', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  new User ({
-    username: username,
-    password: password
-  }).save().then(function(user) {
-
-    console.log('usercreated: ', user);
-    req.session.regenerate(() => {
-      req.session.user = username;
+  new User({username: username})
+    .fetch()
+    .then((user) => {
+      if (user !== null) {
+        console.log('User already exits');
+        res.redirect('/login');
+      } else {
+        new User ({
+          username: username,
+          password: password
+        }).save().then(function(user) {
+          console.log('User has been created');
+          req.session.regenerate(() => {
+            req.session.user = username;
+            res.redirect('/');
+          });
+          
+        });
+        
+      }
     });
-    res.redirect('/');
-  }); 
- 
 });
+
+
+
 
 app.post('/login', function(request, response) {
 
@@ -140,19 +152,18 @@ app.post('/login', function(request, response) {
     .fetch({require: true})
     .then(function(user) {
 
-      if (user !== null) {
-        request.session.regenerate(function() {
-          request.session.user = username;
-          response.redirect('/');
-        });
-      }
+      request.session.regenerate(function() {
+        request.session.user = username;
+        response.redirect('/');
+      });
+
     }).catch(err => {
       response.redirect('/login');
     });
 });
 
 app.get('/logout', function(req, res) {
-  req.session.cookie.expires = Date.now();
+  // req.session.cookie.maxAge = -99999999;
   req.session.destroy();
   res.redirect('/login');
 });
