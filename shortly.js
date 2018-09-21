@@ -2,7 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
-
+var bcrypt = require('bcrypt-nodejs');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -151,12 +151,21 @@ app.post('/login', function(request, response) {
   new User({username: username})
     .fetch({require: true})
     .then(function(user) {
-
-      request.session.regenerate(function() {
-        request.session.user = username;
-        response.redirect('/');
+      console.log(user.attributes.password);
+      bcrypt.compare(password, user.attributes.password, (err, res) => {
+        
+        if (res) {
+           
+          request.session.regenerate(function() {
+            request.session.user = username;
+            response.redirect('/');
+          });
+        } 
+        if (res === false) {
+          console.log('Wrong Password');
+          response.redirect('/login');
+        }
       });
-
     }).catch(err => {
       response.redirect('/login');
     });
