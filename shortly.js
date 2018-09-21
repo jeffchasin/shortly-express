@@ -1,3 +1,4 @@
+// require bcrypt for compare
 var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
@@ -32,7 +33,7 @@ app.use(session({
 
 
 var restrict = function (req, res, next) {
- 
+
   if (req.session.user) {
     next();
   } else {
@@ -43,25 +44,25 @@ var restrict = function (req, res, next) {
 };
 
 
-app.get('/', restrict, 
+app.get('/', restrict,
 
   function(req, res) {
     res.render('index');
   });
 
-app.get('/create', restrict, 
+app.get('/create', restrict,
   function(req, res) {
     res.render('index');
   });
 
-app.get('/links', restrict, 
+app.get('/links', restrict,
   function(req, res) {
     Links.reset().fetch().then(function(links) {
       res.status(200).send(links.models);
     });
   });
 
-app.post('/links', 
+app.post('/links',
   function(req, res) {
     var uri = req.body.url;
 
@@ -133,9 +134,9 @@ app.post('/signup', function(req, res) {
             req.session.user = username;
             res.redirect('/');
           });
-          
+
         });
-        
+
       }
     });
 });
