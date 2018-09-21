@@ -164,8 +164,9 @@ app.post('/login', function(request, response) {
 
 app.get('/logout', function(req, res) {
   // req.session.cookie.maxAge = -99999999;
-  req.session.destroy();
-  res.redirect('/login');
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
 });
 
 /************************************************************/
